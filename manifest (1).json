@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "出差助手",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "出差助手",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "出差自动助手"
+}
