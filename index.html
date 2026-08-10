@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=yes">
+  <title>出差调休助手 · 天数管理</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+    }
+    body {
+      background: #f5f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .app-container {
+      max-width: 420px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      padding: 20px 20px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    h1 span {
+      background: #eef2ff;
+      padding: 4px 14px;
+      font-size: 0.9rem;
+      border-radius: 30px;
+      color: #4f46e5;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    .card {
+      background: #f8fafc;
+      border-radius: 24px;
+      padding: 20px;
+      border: 1px solid #e9eef2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #334155;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-left: 4px solid #4f46e5;
+      padding-left: 12px;
+    }
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .date-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .date-field label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .date-field input {
+      background: white;
+      border: 1px solid #dce2e8;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      color: #1e293b;
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .date-field input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+    .btn {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      width: 100%;
+      box-shadow: 0 6px 14px rgba(79,70,229,0.25);
+    }
+    .btn:active {
+      background: #3730a3;
+      transform: scale(0.98);
+    }
+    .btn-outline {
+      background: white;
+      color: #4f46e5;
+      border: 1px solid #d0d5f0;
+      box-shadow: none;
+      font-weight: 500;
+    }
+    .btn-outline:active {
+      background: #eef2ff;
+    }
+    .trip-item {
+      background: white;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #eef2f6;
+      font-size: 0.9rem;
+    }
+    .trip-dates {
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .trip-days {
+      background: #e0e7ff;
+      color: #4338ca;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .summary-box {
+      background: linear-gradient(135deg, #312e81, #4f46e5);
+      color: white;
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .big-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .label-sm {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .small-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      border-radius: 30px;
+      padding: 8px 18px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+    }
+    .small-btn:active {
+      background: rgba(255,255,255,0.35);
+    }
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 8px 0 12px;
+    }
+    .used-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    input[type="number"] {
+      width: 80px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid #dce2e8;
+      text-align: center;
+      font-weight: 600;
+    }
+    .list-scroll {
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    button:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <h1>
+    🧳 调休助手
+    <span>v1.0</span>
+  </h1>
+
+  <!-- 新增出差记录卡片 -->
+  <div class="card">
+    <div class="card-title">📅 新增出差记录</div>
+    <div class="input-row">
+      <div class="date-field">
+        <label>开始日期</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="date-field">
+        <label>结束日期</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+    <button class="btn" id="addTripBtn">➕ 添加本次出差</button>
+    <p style="font-size:0.75rem; color:#64748b; margin-top:10px;">规则：连续出差满10天可获1天调休，不足10天不计。</p>
+  </div>
+
+  <!-- 出差历史列表 -->
+  <div class="card">
+    <div class="card-title">📋 出差记录</div>
+    <div class="list-scroll" id="tripListContainer">
+      <div style="color:#94a3b8; text-align:center; padding:20px;">暂无出差记录</div>
+    </div>
+    <div class="divider"></div>
+    <div style="display: flex; justify-content: space-between; font-weight:600;">
+      <span>📊 累计获得调休</span>
+      <span style="color:#4f46e5;" id="totalEarnedDisplay">0 天</span>
+    </div>
+  </div>
+
+  <!-- 调休余额与操作 -->
+  <div class="summary-box">
+    <div>
+      <div class="label-sm">🕊️ 剩余可调休</div>
+      <div class="big-number" id="remainingDaysDisplay">0</div>
+      <div class="label-sm">天</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <button class="small-btn" id="useRestBtn">− 使用调休</button>
+      <button class="small-btn" id="addExtraBtn">🎁 节假日/其他增加</button>
+    </div>
+  </div>
+
+  <!-- 已使用调休显示 -->
+  <div style="display: flex; justify-content: space-between; background: #f1f5f9; border-radius: 20px; padding: 12px 16px; font-size:0.9rem;">
+    <span>✅ 已使用调休</span>
+    <span style="font-weight:700;" id="usedDaysDisplay">0 天</span>
+  </div>
+  
+  <p style="color:#94a3b8; font-size:0.7rem; text-align:center; margin-top:4px;">数据保存在本地 · 可打包为APK</p>
+</div>
+
+<script>
+  (function() {
+    // ---------- 存储结构 ----------
+    const STORAGE_KEY = 'business_trip_rest_v1';
+
+    // 默认数据结构
+    const defaultData = {
+      trips: [],            // { id, start, end, days, earnedRest }
+      extraRest: 0,        // 因节假日等其他原因手动增加的调休天数
+      usedRest: 0          // 已使用的调休天数
+    };
+
+    // 加载数据
+    function loadData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (e) {}
+      return { ...defaultData, trips: [], extraRest: 0, usedRest: 0 };
+    }
+
+    // 保存数据
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // 当前数据
+    let appData = loadData();
+
+    // ---------- 工具函数：计算两个日期的差值（包含首尾，例如1号到1号算1天）----------
+    function calculateDays(startStr, endStr) {
+      if (!startStr || !endStr) return 0;
+      const start = new Date(startStr + 'T00:00:00');
+      const end = new Date(endStr + 'T00:00:00');
+      if (isNaN(start) || isNaN(end)) return 0;
+      const diffTime = end.getTime() - start.getTime();
+      if (diffTime < 0) return 0;
+      // 包括起始日和结束日，所以 +1
+      return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    // 根据出差天数计算可获调休：每满10天给1天，不足10天0天
+    function computeEarnedRest(days) {
+      if (days < 10) return 0;
+      return Math.floor(days / 10);
+    }
+
+    // 计算总获得调休 = 所有出差记录累加 + 额外增加
+    function getTotalEarned() {
+      let tripEarned = appData.trips.reduce((sum, trip) => sum + (trip.earnedRest || 0), 0);
+      return tripEarned + (appData.extraRest || 0);
+    }
+
+    // 计算剩余调休 = 总获得 - 已使用
+    function getRemainingRest() {
+      let total = getTotalEarned();
+      let used = appData.usedRest || 0;
+      return Math.max(0, total - used);
+    }
+
+    // ---------- 渲染界面 ----------
+    function renderAll() {
+      renderTripList();
+      renderSummary();
+      // 每次渲染后自动保存
+      saveData(appData);
+    }
+
+    function renderTripList() {
+      const container = document.getElementById('tripListContainer');
+      if (!container) return;
+      if (!appData.trips || appData.trips.length === 0) {
+        container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">暂无出差记录</div>';
+        document.getElementById('totalEarnedDisplay').innerText = '0 天';
+        return;
+      }
+
+      let html = '';
+      appData.trips.forEach((trip, index) => {
+        const startFormatted = trip.start || '?';
+        const endFormatted = trip.end || '?';
+        html += `
+          <div class="trip-item">
+            <div>
+              <div class="trip-dates">${startFormatted} → ${endFormatted}</div>
+              <div style="font-size:0.8rem; color:#475569;">出差 ${trip.days} 天 · 调休 +${trip.earnedRest}</div>
+            </div>
+            <button style="background:none; border:none; color:#b91c1c; font-size:1.2rem; cursor:pointer; padding:0 8px;" data-index="${index}" class="delete-trip-btn">🗑️</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+
+      // 绑定删除事件
+      document.querySelectorAll('.delete-trip-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const index = parseInt(this.getAttribute('data-index'), 10);
+          deleteTrip(index);
+        });
+      });
+
+      // 更新累计获得调休显示
+      let tripEarnedTotal = appData.trips.reduce((sum, t) => sum + (t.earnedRest || 0), 0);
+      document.getElementById('totalEarnedDisplay').innerText = tripEarnedTotal + ' 天';
+    }
+
+    function renderSummary() {
+      const totalEarned = getTotalEarned();
+      const used = appData.usedRest || 0;
+      const remaining = getRemainingRest();
+
+      document.getElementById('remainingDaysDisplay').innerText = remaining;
+      document.getElementById('usedDaysDisplay').innerText = used + ' 天';
+    }
+
+    // 删除出差记录
+    function deleteTrip(index) {
+      if (index >= 0 && index < appData.trips.length) {
+        appData.trips.splice(index, 1);
+        renderAll();
+      }
+    }
+
+    // 添加出差记录
+    function addTrip() {
+      const startInput = document.getElementById('startDate');
+      const endInput = document.getElementById('endDate');
+      const startVal = startInput.value;
+      const endVal = endInput.value;
+
+      if (!startVal || !endVal) {
+        alert('请选择开始日期和结束日期');
+        return;
+      }
+
+      const days = calculateDays(startVal, endVal);
+      if (days <= 0) {
+        alert('结束日期不能早于开始日期');
+        return;
+      }
+
+      const earnedRest = computeEarnedRest(days);
+
+      const newTrip = {
+        id: Date.now(),
+        start: startVal,
+        end: endVal,
+        days: days,
+        earnedRest: earnedRest
+      };
+
+      appData.trips.push(newTrip);
+      
+      // 清空日期输入框（可选）
+      startInput.value = '';
+      endInput.value = '';
+      
+      renderAll();
+    }
+
+    // 使用调休 (减去已使用天数)
+    function useRestDay() {
+      const remaining = getRemainingRest();
+      if (remaining <= 0) {
+        alert('没有剩余调休天数可供使用');
+        return;
+      }
+
+      let useDaysStr = prompt('请输入要使用的调休天数', '1');
+      if (useDaysStr === null) return;
+      const useDays = parseInt(useDaysStr, 10);
+      if (isNaN(useDays) || useDays <= 0) {
+        alert('请输入有效的正整数');
+        return;
+      }
+      if (useDays > remaining) {
+        alert(`剩余调休仅 ${remaining} 天，无法使用 ${useDays} 天`);
+        return;
+      }
+
+      appData.usedRest = (appData.usedRest || 0) + useDays;
+      renderAll();
+    }
+
+    // 增加额外调休 (节假日/其他原因)
+    function addExtraRest() {
+      let extraStr = prompt('请输入要增加的调休天数（节假日、其他原因）', '1');
+      if (extraStr === null) return;
+      const extraDays = parseInt(extraStr, 10);
+      if (isNaN(extraDays) || extraDays <= 0) {
+        alert('请输入有效的正整数');
+        return;
+      }
+      appData.extraRest = (appData.extraRest || 0) + extraDays;
+      renderAll();
+    }
+
+    // 重置所有数据 (可选，长按或隐藏功能，为了安全可加确认)
+    function resetAllData() {
+      if (confirm('⚠️ 确定要清空所有出差记录和调休数据吗？此操作不可恢复。')) {
+        appData = { trips: [], extraRest: 0, usedRest: 0 };
+        renderAll();
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+      }
+    }
+
+    // 初始化绑定事件
+    function bindEvents() {
+      document.getElementById('addTripBtn').addEventListener('click', addTrip);
+      document.getElementById('useRestBtn').addEventListener('click', useRestDay);
+      document.getElementById('addExtraBtn').addEventListener('click', addExtraRest);
+
+      // 可选：双击标题重置（谨慎操作）
+      const title = document.querySelector('h1');
+      if (title) {
+        title.addEventListener('dblclick', function(e) {
+          resetAllData();
+        });
+      }
+    }
+
+    // 设置默认日期（今天）
+    function setDefaultDates() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+      const startEl = document.getElementById('startDate');
+      const endEl = document.getElementById('endDate');
+      if (startEl && !startEl.value) startEl.value = todayStr;
+      if (endEl && !endEl.value) endEl.value = todayStr;
+    }
+
+    // 启动一切
+    window.addEventListener('DOMContentLoaded', function() {
+      // 确保数据完整性
+      if (!appData.trips) appData.trips = [];
+      if (appData.extraRest === undefined) appData.extraRest = 0;
+      if (appData.usedRest === undefined) appData.usedRest = 0;
+      
+      setDefaultDates();
+      bindEvents();
+      renderAll();
+    });
+
+  })();
+</script>
+</body>
+</html>
